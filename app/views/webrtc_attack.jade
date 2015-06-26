@@ -1,0 +1,52 @@
+extends layout
+
+block head
+	style.
+		#messages {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+		#messages li {
+			padding: 5px 10px;
+		}
+		#messages li:nth-child(odd) {
+			background: #eee;
+		}
+
+block content
+  
+	h1= title
+	p Listen to conversation at /webrtc
+  
+	div#container
+	div#videos
+		video#alice(autoplay muted)
+		video#bob(autoplay muted)
+
+	button#start Start
+	button#webrtcAlice Listen Alice
+	button#webrtcBob Listen Bob
+	button#closeAttack Close Attack
+	button#webrtcHangup Hang up
+
+	script(src="/socket.io/socket.io.js")
+	script. 
+		var socket = io();
+		$('#webrtcAlice').click(function() {
+			listenAlice()
+		})
+		$('#closeAttack').click(function() {
+			thanks()
+		})
+		$('#start').click(function() {
+			startUserMedia()
+		})  
+		$('#webrtcBob').click(function() {
+			listenBob()
+		})  
+		$('#webrtcHangup').click(function() {
+		})  
+    
+	script(src="/javascripts/lib/adapter.js")
+	script(src="/javascripts/webrtc_attack.js")

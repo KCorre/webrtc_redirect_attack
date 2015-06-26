@@ -1,0 +1,72 @@
+var express = require('express');
+var router = express.Router();
+var request = require('request');
+
+/**
+ * POST /auth/login
+ *
+ * Route is part of Persona integration. It is called by navigator.id.watch -> onlogin.
+ * Take the assertion sent from the client and verify against Persona Verifier.
+ * If assertion is valid store email in session  and check if user is already in db.
+ * If user isn't in db insert a new user document with an empty username property.
+ * If user is already in db just send 200 - OK.
+ */
+
+router.post('/login', function(req, resp) {
+  var db = req.db;
+  var audience;
+  if (process.env.NODE_ENV === 'production') {
+    audience = 'http://mysterious-coast-9759.herokuapp.com/'
+  } else {
+    audience = 'http://localhost:3000/'
+  }
+  request.post({
+    url: 'https://verifier.login.persona.org/verify',
+    json: {
+      assertion: req.body.assertion,
+      audience: audience
+    }
+  }, function(err, res, body) {
+    if (err) console.log(err);
+    if (body.status === 'okay') {
+      var email = body.email;
+      req.session.email = email;
+      // check if email is already saved in db
+      db.view('users', 'byEmail', {key: email}, function(err, body) {
+        if (err) console.log(err);
+        if (!body.rows[0]) {
+          // email is not in db
+          var user = {
+            type: 'user',
+            email: email,
+            username: ''
+          };
+          db.insert(user, function(err, body) {
+            console.log('insert new user in db');
+            if (err) console.log(err);
+            resp.send(200);
+          })
+        } else {
+          // email is already stored in db
+          req.session.username = body.rows[0].value;
+          console.log('found in db');
+          resp.send(200);
+        }
+      });
+    }
+  });
+});
+
+/**
+ * GET /auth/logout
+ *
+ * Route is part of Persona integration. It is called by navigator.id.watch -> onlogout.
+ * Destroy session, delete cookie and redirect user to index page.
+ */
+router.get('/logout', function(req, res) {
+  req.session = null;
+  res.clearCookie('email');
+  res.redirect('/');
+});
+
+module.exports = router;

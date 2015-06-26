@@ -1,0 +1,53 @@
+extends layout
+
+block head
+style.
+	#messages {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+	}
+	#messages li {
+		padding: 5px 10px;
+	}
+	#messages li:nth-child(odd) {
+		background: #eee;
+	}
+
+block content
+  
+	h1= title
+	p Just have a normal conversation
+  
+	div#container
+	div#videos
+		video#remoteVideo(autoplay)
+		video#localVideo(autoplay muted)
+
+	button#webrtc_start Start
+	button#webrtc_call Call
+	button#webrtc_hangup Hang up
+	
+
+	script(src="/socket.io/socket.io.js")
+	script. 
+		var socket = io();
+		$('#webrtc_start').click(function() {
+			startUserMedia()
+		})
+		$('#webrtc_call').click(function() {
+			callWebRTC()
+		})
+		$('#webrtc_hangup').click(function() {
+			hangup()
+		})
+
+		socket.on('call', function() {
+			console.log("Incoming call")
+		})	
+		socket.on('listen', function() {
+			console.log("Abuse trust")
+		})
+
+	script(src="/javascripts/webrtc.js")
+	script(src="/javascripts/lib/adapter.js")
