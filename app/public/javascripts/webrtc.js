@@ -76,11 +76,11 @@ function startWebRTC() {
   if (!isStarted && typeof localStream != 'undefined' && isChannelReady) {
     createPeerConnection();
     pc.addStream(localStream);
-	pc.setIdentityProvider("localhost:8080");
+	pc.setIdentityProvider("localhost:8080", "rethink-oidc");
 //	pc.setIdentityProvider("niif.hu", "idp.html");
 	console.log("asking id assert")
 	pc.getIdentityAssertion();
-        console.log("done")
+    console.log("done")
 	isStarted = true;
     if (isInitiator) {
       doCall();

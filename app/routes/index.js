@@ -85,7 +85,7 @@ router.get('/webrtc_attack', function(req, res){
 
 router.get('/.well-known/idp-proxy/default', function(req, res){
 	var path = require('path');
-	res.sendFile(path.resolve(__dirname+'/../public/idp_proxy.html'));
+	res.sendFile(path.resolve(__dirname+'/../public/javascripts/idpProxy.js'));
 })
 
 module.exports = router;

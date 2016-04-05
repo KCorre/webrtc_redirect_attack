@@ -249,7 +249,7 @@ app.use(function(err, req, res, next) {
     });
 });
 
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 6370);
 server.listen(app.get('port'), function(){
     console.log('listening on '+ server.address().port);
 });
